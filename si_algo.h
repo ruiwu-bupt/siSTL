@@ -1,6 +1,7 @@
 #ifndef __SI_ALGO_H
 #define __SI_ALGO_H
 
+// 基础算法，包含全局构造函数，拷贝函数
 #include <cstring>
 #include <new>
 
