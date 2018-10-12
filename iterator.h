@@ -18,20 +18,20 @@ struct RandomAcessIterator : BidirectionalIterator{};
 template<typename T, typename IteratorCategory>
 struct __Iterator_Template
 {
-	typedef T value_type;
-	typedef T* pointer;
-	typedef T& reference;
-	typedef IteratorCategory category;
+    typedef T value_type;
+    typedef T* pointer;
+    typedef T& reference;
+    typedef IteratorCategory category;
 };
 
 // 原生指针
 template<typename T, typename IteratorCategory>
 struct __Iterator_Template<T*>
 {
-	typedef T value_type;
-	typedef T* pointer;
-	typedef T& reference;
-	typedef IteratorCategory category;
+    typedef T value_type;
+    typedef T* pointer;
+    typedef T& reference;
+    typedef IteratorCategory category;
 };
 
 #endif
