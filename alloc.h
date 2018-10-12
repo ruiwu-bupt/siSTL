@@ -7,21 +7,18 @@
 #include <cstdlib>
 #include <cstddef>
 
-template<typename T>
-class alloc_template
+class simple_alloc
 {
 public:
-	void* alloc(size_t num, T inst);
-	void dealloc(T* Tp);
+	void* alloc(size_t num);
+	void dealloc(void* Tp);
 };
 
-template<typename T>
-void* alloc_template<T>::alloc(size_t num, T inst) {
-	return malloc(num * sizeof(T));
+void* simple_alloc::alloc(size_t num) {
+	return malloc(num);
 }
 
-template<typename T>
-void alloc_template<T>::dealloc(T* Tp) {
+void alloc_template<T>::dealloc(void* Tp) {
 	free(Tp);
 }
 
