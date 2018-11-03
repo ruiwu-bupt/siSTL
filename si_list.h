@@ -4,7 +4,7 @@
 #include <assert.h>
 #include <stddef.h>
 #include <alloc.h>
-#include <iterator.h>
+#include <si_iterator.h>
 #include <si_algol.h>
 #include <si_traits.h>
 #include <si_vector.h>
@@ -98,7 +98,7 @@ public:
     list(const vector<T>& initial) {
         list();
         for (int i = 0; i < initial.size(); ++i)
-            push_back(initial[i]);
+
     }
     iterator begin() const {
         return __begin + 1;
