@@ -3,9 +3,9 @@
 
 #include <assert.h>
 #include <stddef.h>
-#include <alloc.h>
+#include <si_alloc.h>
 #include <si_iterator.h>
-#include <si_algol.h>
+#include <si_algo.h>
 #include <si_traits.h>
 #include <si_vector.h>
 
@@ -24,7 +24,7 @@ template<typename T, typename Alloc = simple_alloc>
 class list{
 public:
     // definition for list<T>::iterator
-    struct iterator : public __Iterator_Template<node<T>, BidirectionalIterator>{
+    struct iterator : public __Iterator_Template<node<T>, BidirectionalIterator> {
         typedef iterator self;
         pointer it;
         self& operator++() {
@@ -140,3 +140,5 @@ private:
     iterator __end;
     size_t length;
 }
+
+#endif

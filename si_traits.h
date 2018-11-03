@@ -1,7 +1,7 @@
 #ifndef __TRAITS_H
 #define __TRAITS_H
 
-#include <iterator>
+#include <si_iterator.h>
 // 萃取器
 // 对iterator萃取指向类型的相关信息
 // 对普通类及原生类型判断其有无non-trivial constructer等函数
