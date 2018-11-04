@@ -21,3 +21,5 @@ class equal{
         return lval == rval;
     }
 }
+
+#endif

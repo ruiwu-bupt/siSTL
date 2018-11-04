@@ -3,18 +3,17 @@
 
 #include <assert.h>
 #include <stddef.h>
-#include <si_alloc.h>
-#include <si_iterator.h>
-#include <si_algo.h>
-#include <si_traits.h>
-#include <si_vector.h>
+#include "si_alloc.h"
+#include "si_iterator.h"
+#include "si_algo.h"
+#include "si_traits.h"
+#include "si_vector.h"
 
 template<typename T>
 struct node{
     T val;
     node* pre;
     node* next;
-    typedef node self;
     node() : pre(NULL), next(NULL){}
     node(T a) : val(a), pre(NULL), next(NULL){}
 };
@@ -82,9 +81,7 @@ public:
     // definition for list<T>
     // construct from vector, extend another list(no copy)
     // push_back, pop_back, insert, remove, size, begin, end
-    size_t size() const {
-        return length;
-    }
+    size_t size() const {return length;}
     list() {
         length = 0;
         node<T>* end = new node<T>;
@@ -95,9 +92,13 @@ public:
         __end = new iterator(end);
         
     }
-    list(const vector<T>& initial) {
-        list();
-        for (int i = 0; i < initial.size(); ++i)
+    // TODO
+    // list(const vector<T>& initial) {
+    //     list();
+    //     for (int i = 0; i < initial.size(); ++i)
+
+    // }
+    ~list() {
 
     }
     iterator begin() const {

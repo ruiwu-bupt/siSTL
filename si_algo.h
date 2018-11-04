@@ -33,19 +33,22 @@ void fill_n(ForwardIterator begin, ForwardIterator end, T val) {
         construct(&*begin, val);
 }
 
+template<typename ForwardIterator>
 void destroy(ForwardIterator begin, ForwardIterator end) {
-    typedef typename value_type(begin) value_type;
+    typedef typename traits_iterator<ForwardIterator>::value_type value_type;
     typedef typename __type_traits<value_type>::has_trivial_destructor __POD_Type;
     destroy_aux(begin, end, __POD_Type());
 }
 
 // do nothing
+template<typename ForwardIterator>
 void destroy_aux(ForwardIterator begin, ForwardIterator end, __POD_True) {
 
 }
 
 // call destructor
-void destroy_aux(ForwardIterator begin, ForwardIterator end, __POD_Flase) {
+template<typename ForwardIterator>
+void destroy_aux(ForwardIterator begin, ForwardIterator end, __POD_False) {
     for(; begin != end; ++begin)
         destroy(&*begin);
 }

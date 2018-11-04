@@ -14,11 +14,11 @@ public:
     static void dealloc(void* Tp);
 };
 
-static void* simple_alloc::alloc(size_t num) {
+void* simple_alloc::alloc(size_t num) {
     return malloc(num);
 }
 
-static void simple_alloc::dealloc(void* Tp) {
+void simple_alloc::dealloc(void* Tp) {
     free(Tp);
 }
 

@@ -1,8 +1,8 @@
 #ifndef __SI_MAP_H
 #define __SI_MAP_H
-#include <si_iterator.h>
-#include <si_alloc.h>
-#include <si_functor.h>
+#include "si_iterator.h"
+#include "si_alloc.h"
+#include "si_functor.h"
 
 // using red black tree for implementation
 template<typename T>
