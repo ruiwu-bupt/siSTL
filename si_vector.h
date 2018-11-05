@@ -152,5 +152,4 @@ private:
 	}
 };
 }
-
 #endif

@@ -6,6 +6,7 @@
 #include <new>
 #include "si_traits.h"
 #include "si_iterator.h"
+#include "si_alloc.h"
 
 // 广义构造函数
 template<typename T1, typename T2>
@@ -51,6 +52,24 @@ template<typename ForwardIterator>
 void destroy_aux(ForwardIterator begin, ForwardIterator end, __POD_False) {
     for(; begin != end; ++begin)
         destroy(&*begin);
+}
+
+template<typename ForwardIterator, type Alloc = simple_alloc>
+void destroy_dealloc(ForwardIterator begin, ForwardIterator end) {
+    ForwardIterator it = begin;
+    while (it != end) {
+        ForwardIterator tmp = it;
+        ++tmp;
+        destroy(&*it);
+        Alloc::dealloc(&*it);
+        it = tmp;
+    }
+}
+
+template<typename ForwardIterator, type Alloc = simple_alloc>
+void destroy_dealloc(ForwardIterator begin) {
+    destroy(&*begin);
+    Alloc::dealloc(&*begin);
 }
 
 #endif

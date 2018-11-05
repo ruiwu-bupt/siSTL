@@ -24,6 +24,10 @@ class list{
 public:
     // definition for list<T>::iterator
     struct iterator : public __Iterator_Template<node<T>, BidirectionalIterator> {
+        typedef typename __Iterator_Template<node<T>, BidirectionalIterator>::value_type value_type;
+        typedef typename __Iterator_Template<node<T>, BidirectionalIterator>::pointer pointer;
+        typedef typename __Iterator_Template<node<T>, BidirectionalIterator>::reference reference;
+        typedef typename __Iterator_Template<node<T>, BidirectionalIterator>::category category;
         typedef iterator self;
         pointer it;
         self& operator++() {
@@ -81,9 +85,9 @@ public:
     // definition for list<T>
     // construct from vector, extend another list(no copy)
     // push_back, pop_back, insert, remove, size, begin, end
-    size_t size() const {return length;}
+    inline size_t size() const {return __length;}
     list() {
-        length = 0;
+        __length = 0;
         node<T>* end = new node<T>;
         node<T>* begin = new node<T>;
         begin->next = end;
@@ -92,7 +96,7 @@ public:
         __end = new iterator(end);
         
     }
-    // TODO
+    // TODO: construct from vector<T>
     // list(const vector<T>& initial) {
     //     list();
     //     for (int i = 0; i < initial.size(); ++i)
@@ -108,7 +112,7 @@ public:
         return __end;
     }
     void insert(const size_t pos, const T val) {
-        assert(pos >=0 && pos <= length);
+        assert(pos >=0 && pos <= __length);
         node<T>* tmp = new node<T>(val);
         iterator it_pos_minus1 = __begin + pos;
         iterator it_pos = it_pos_minus1 + 1;
@@ -116,30 +120,30 @@ public:
         tmp->pre = it_pos_minus1;
         tmp->next = it_pos;
         it_pos->pre = tmp;
-        ++length;
+        ++__length;
     }
     void remove(const size_t pos) {
-        assert(pos >=0 && pos < length);
+        assert(pos >=0 && pos < __length);
         iterator it_pos_minus1 = __begin + pos;
         iterator it_pos = it_pos_minus1 + 1
         iterator it_pos_add1 = it_pos + 1;
         delete it_pos.it;
         it_pos_minus1->next = it_pos_add1;
         it_pos_add1->pre = it_pos_minus1;
-        --length;
+        --__length;
     }
     void push_back(const T val) {
-        insert(length, val);
+        insert(__length, val);
     }
     void pop_back(const T val) {
-        remove(length-1);
+        remove(__length-1);
     }
 private:
     // head node
     iterator __begin;
     // node after tail node
     iterator __end;
-    size_t length;
+    size_t __length;
 }
 
 #endif
