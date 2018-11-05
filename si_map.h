@@ -35,6 +35,46 @@ public:
         typedef typename __Iterator_Template<rbtree_node<T>, RandomAccessIterator>::reference reference;
         typedef typename __Iterator_Template<rbtree_node<T>, RandomAccessIterator>::category category;
         pointer it;
+        pointer predecessor(pointer p) {
+            assert(p && p != _nil);
+            if (p->l != _nil) {
+                p = p->l;
+                while (p->r != _nil)
+                    p = p->r;
+                return p;
+            }
+            else {
+                if (p == &*__root)
+                    return _nil;
+                else if (p == p->p->r)
+                    return p->p;
+                else {
+                    while (p == p->p->l)
+                        p = p->p;
+                    return p->p;
+                }
+            }
+        }
+        pointer successor(pointer p) {
+            assert(p && p != _nil);
+            if (p->r != _nil) {
+                p = p->r;
+                while (p->l != _nil)
+                    p = p->l;
+                return p;
+            }
+            else {
+                if (p == &*__root)
+                    return _nil;
+                else if (p == p->p->l)
+                    return p->p;
+                else {
+                    while (p == p->p->r)
+                        p = p->p;
+                    return p->p;
+                }
+            }
+        }
         self& operator++() {
             assert(it);
             it = it->next;
@@ -88,9 +128,9 @@ public:
     map() {
         __nil = iterator(Alloc::alloc(sizeof(value_type)));
         _nil = &*__nil;
-        __root = nil;
-        __begin = nil;
-        __end = nil;
+        __root = __nil;
+        __begin = __nil;
+        __end = __nil;
         __length = 0;
     }
     ~map() {
@@ -170,46 +210,4 @@ private:
         if (dst_p == _nil)
             __root = iterator(src);
     }
-    pointer predecessor(pointer p) {
-        assert(p && p != _nil);
-        if (p->l != _nil) {
-            p = p->l;
-            while (p->r != _nil)
-                p = p->r;
-            return p;
-        }
-        else {
-            if (p == &*__root)
-                return _nil;
-            else if (p == p->p->r)
-                return p->p;
-            else {
-                while (p == p->p->l)
-                    p = p->p;
-                return p->p;
-            }
-        }
-    }
-    pointer successor(pointer p) {
-        assert(p && p != _nil);
-        if (p->r != _nil) {
-            p = p->r;
-            while (p->l != _nil)
-                p = p->l;
-            return p;
-        }
-        else {
-            if (p == &*__root)
-                return _nil;
-            else if (p == p->p->l)
-                return p->p;
-            else {
-                while (p == p->p->r)
-                    p = p->p;
-                return p->p;
-            }
-        }
-    }
 }
-
-typedef 
