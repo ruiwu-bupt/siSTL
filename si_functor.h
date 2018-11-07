@@ -2,24 +2,24 @@
 #define __SI_FUNCTOR_H
 
 template<typename T>
-class less{
+struct less{
     bool operator()(const T& lval, const T& rval) const {
         return lval < rval;
     }
-}
+};
 
 template<typename T>
-class greater{
+struct greater{
     bool operator()(const T& lval, const T& rval) const {
         return lval > rval;
     }
-}
+};
 
 template<typename T>
-class equal{
+struct equal{
     bool operator()(const T& lval, const T& rval) const {
         return lval == rval;
     }
-}
+};
 
 #endif

@@ -9,10 +9,11 @@
 // map equals to rbtree, typedef map rbtree
 // TODO: no nil node leads to trivial bound case check
 
-static enum Color {black, red};
+namespace si{
+enum Color {black, red};
 
 template<typename Key, typename Value>
-static struct rbtree_node {
+struct rbtree_node {
     pair<Key, Value> data;
     rbtree_node* l;
     rbtree_node* r;
@@ -24,19 +25,20 @@ static struct rbtree_node {
         p = l;
         color = red;
     }
-}
+};
 
 // 
-template<typename Key, typename Value, typename Compare = less<T>, typename Alloc = simple_alloc>
+template<typename Key, typename Value, typename Compare = less<Key>, typename Alloc = simple_alloc>
 class map{
 public:
     // definition for map iterator
-    struct iterator : public __Iterator_Tempalte<rbtree_node<Key, Value>, BidirectionalIterator> {
+    struct iterator : public __Iterator_Template<rbtree_node<Key, Value>, BidirectionalIterator> {
         typedef rbtree_node<Key, Value> value_type;
         typedef value_type* pointer;
         typedef value_type& reference;
-        typedef __Iterator_Template<rbtree_node<T>, RandomAccessIterator>::category category;
+        typedef typename __Iterator_Template<rbtree_node<Key, Value>, BidirectionalIterator>::category category;
         pointer it;
+        typedef iterator self;
         // TODO: design problem, we can't access __nil in iterator struct
         // is __nil necessary for rbtree implementataion
         pointer predecessor(pointer p) {
@@ -117,29 +119,32 @@ public:
         }
         bool operator==(const self& that) const {return it == that.it;}
         bool operator!=(const self& that) const {return it != that.it;}
-        reference operator*() {return (*it).data;}
+        pair<Key, Value>& operator*() {return it->data;}
         pointer operator->() {return &(operator* ());}
-        iterator(pointer = NULL) {
-            it = pointer;
+        iterator(pointer p=NULL) {
+            it = p;
         }
-    }
+    };
     // constructor, copy constsructor, overload operator assignment
     // overload operator[]
     // insert, delete
     // begin, end, size, clear
     // private: predecessor, successor
     // private: left_rotate, right_rotate, transplant
+    typedef typename iterator::value_type value_type;
+    typedef typename iterator::reference reference;
+    typedef typename iterator::pointer pointer;
     map() {
         __head = iterator((pointer)Alloc::alloc(sizeof(value_type)));
         __length = 0;
     }
     ~map() {
-        destroy_dealloc(__begin, __end);
+        __destroy(&*__root);
     }
     inline size_t size() const { return __length;}
     inline iterator begin() const { return __begin;}
     inline iterator end() const { return __end;}
-    iterator find(const key& k) const {
+    iterator find(const Key& k) const {
         return __find(k, false).first;
     }
     // rvalue access, read map[key]
@@ -158,9 +163,6 @@ public:
                 p2fixup->p = (&*__head);
                 p2fixup->color = black;
             }
-            else if (p2fixup->p = ) {
-
-            }
             else {
                 insert_fixup(p2fixup);
             }
@@ -175,7 +177,6 @@ private:
     // TODO: how to destruct static pointer points to dynamic memory ?
     // may not need to destruct, only one instance, no memory leak
     // when application terminates, OS tear down everything and get memory back
-    typedef iterator::pointer pointer;
     // parent of root
     iterator __head;
     // TODO: is __root declared type of pointer better?
@@ -288,7 +289,7 @@ private:
     void insert_fixup(pointer z) {
         while (z->p->color == red) {
             if (z->p == z->p->p->l) {
-                y = z->p->p->r;
+                pointer y = z->p->p->r;
                 if (y && y->color == red) { // case 1
                      z->p->color = black;
                      y->color = black;
@@ -307,7 +308,7 @@ private:
                 right_rotate(z->p->p);
             }
             else {
-                y = z->p->p->l;
+                pointer y = z->p->p->l;
                 if (y && y->color == red) { // case 1
                      z->p->color = black;
                      y->color = black;
@@ -331,4 +332,17 @@ private:
     // inline Color& clor(pointer z) {
     //     return z ? z.color : black;
     // }
+    // post order traverse for destructor
+    void __destroy(pointer p) {
+        if (!p)
+            return;
+        if (p->l)
+            __destroy(p->l);
+        if (p->r)
+            __destroy(p->r);
+        destroy_dealloc(iterator(p));
+    }
+};
 }
+
+#endif
