@@ -33,7 +33,11 @@ class map{
 public:
     // definition for map iterator
     struct iterator : public __Iterator_Template<rbtree_node<Key, Value>, BidirectionalIterator> {
-        typedef rbtree_node<Key, Value> value_type;
+        typedef pair<Key, Value> value_type;
+        // TODO: iterator points to pair, but it need to point to node for implementation
+        // design problem, luckily they have same address since pair is the first member of node struct
+        typedef rbtree_node<Key, Value> node_type;
+        typedef rbtree_node<Key, Value>* node_pointer;
         typedef value_type* pointer;
         typedef value_type& reference;
         typedef typename __Iterator_Template<rbtree_node<Key, Value>, BidirectionalIterator>::category category;
@@ -119,7 +123,7 @@ public:
         }
         bool operator==(const self& that) const {return it == that.it;}
         bool operator!=(const self& that) const {return it != that.it;}
-        pair<Key, Value>& operator*() {return it->data;}
+        pair<Key, Value>& operator*() {return *it}
         pointer operator->() {return &(operator* ());}
         iterator(pointer p=NULL) {
             it = p;
