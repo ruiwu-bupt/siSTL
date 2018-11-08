@@ -33,13 +33,14 @@ class map{
 public:
     // definition for map iterator
     struct iterator : public __Iterator_Template<rbtree_node<Key, Value>, BidirectionalIterator> {
-        typedef pair<Key, Value> value_type;
         // TODO: iterator points to pair, but it need to point to node for implementation
         // design problem, luckily they have same address since pair is the first member of node struct
         typedef rbtree_node<Key, Value> node_type;
-        typedef rbtree_node<Key, Value>* node_pointer;
-        typedef value_type* pointer;
-        typedef value_type& reference;
+        typedef node_type* pointer;
+        typedef node_type& reference;
+        typedef pair<Key, Value> value_type;
+        typedef value_type* v_pointer;
+        typedef value_type& v_reference;
         typedef typename __Iterator_Template<rbtree_node<Key, Value>, BidirectionalIterator>::category category;
         pointer it;
         typedef iterator self;
@@ -51,17 +52,17 @@ public:
                 p = p->l;
                 while (p->r)
                     p = p->r;
-                return p;
+                return (pointer)p;
             }
             else {
-                if (p == &*__root)
+                if (p == __root)
                     return NULL;
                 else if (p == p->p->r)
-                    return p->p;
+                    return (pointer)(p->p);
                 else {
                     while (p == p->p->l)
                         p = p->p;
-                    return p->p;
+                    return (pointer)(p->p);
                 }
             }
         }
@@ -71,17 +72,17 @@ public:
                 p = p->r;
                 while (p->l)
                     p = p->l;
-                return p;
+                return (pointer)p;
             }
             else {
-                if (p == &*__root)
+                if (p == __root)
                     return NULL;
                 else if (p == p->p->l)
-                    return p->p;
+                    return (pointer)(p->p);
                 else {
                     while (p == p->p->r)
                         p = p->p;
-                    return p->p;
+                    return (pointer)(p->p);
                 }
             }
         }
@@ -123,8 +124,8 @@ public:
         }
         bool operator==(const self& that) const {return it == that.it;}
         bool operator!=(const self& that) const {return it != that.it;}
-        pair<Key, Value>& operator*() {return *it}
-        pointer operator->() {return &(operator* ());}
+        v_reference operator*() {return *(v_pointer)it;}
+        v_pointer operator->() {return &(operator* ());}
         iterator(pointer p=NULL) {
             it = p;
         }
@@ -135,36 +136,41 @@ public:
     // begin, end, size, clear
     // private: predecessor, successor
     // private: left_rotate, right_rotate, transplant
-    typedef typename iterator::value_type value_type;
+    typedef typename iterator::node_type node_type;
     typedef typename iterator::reference reference;
     typedef typename iterator::pointer pointer;
+    typedef typename iterator::value_type value_type;
+    typedef typename iterator::v_reference v_reference;
+    typedef typename iterator::v_pointer v_pointer;
     map() {
-        __head = iterator((pointer)Alloc::alloc(sizeof(value_type)));
+        __head = (pointer)Alloc::alloc(sizeof(node_type));
+        __begin = NULL;
+        __root = NULL;
         __length = 0;
     }
     ~map() {
-        __destroy(&*__root);
+        __destroy(__root);
     }
     inline size_t size() const { return __length;}
-    inline iterator begin() const { return __begin;}
-    inline iterator end() const { return __end;}
+    inline iterator begin() const { return iterator(__begin);}
+    inline iterator end() const { return iterator();}
     iterator find(const Key& k) const {
-        return __find(k, false).first;
+        return iterator(__find(k, false).first);
     }
     // rvalue access, read map[key]
     Value operator[](const Key& k) const {       
         iterator cur = find(k);
-        assert(cur != __end);
+        assert(cur.it);
         return (*cur).second;
     }
     // lvalue access, modify map[key] = value
     Value& operator[](const Key& k) {
-        pair<iterator, bool> tmp = __find(k, true);
+        pair<pointer, bool> tmp = __find(k, true);
         if (tmp.second) {
-            pointer p2fixup = &*tmp.first;
+            pointer p2fixup = tmp.first;
             if (!__length) {
-                (&*__head)->l = p2fixup;
-                p2fixup->p = (&*__head);
+                (__head)->l = p2fixup;
+                p2fixup->p = (__head);
                 p2fixup->color = black;
             }
             else {
@@ -172,7 +178,7 @@ public:
             }
             ++__length;
         }
-        return (*tmp.first).second;
+        return iterator(tmp.first)->second;
     }
     void remove(const Key& k) {
 
@@ -182,19 +188,20 @@ private:
     // may not need to destruct, only one instance, no memory leak
     // when application terminates, OS tear down everything and get memory back
     // parent of root
-    iterator __head;
+    pointer __head;
     // TODO: is __root declared type of pointer better?
     // we can return iterator(__begin) in begin member function
-    iterator __root;
-    iterator __begin;
-    iterator __end;
+    pointer __root;
+    pointer __begin;
     size_t __length;
+    // TODO: static member?
+    Compare comp;
     // inline void valid(pointer p) { return p != NULL;}
     // TODO: deduce equal relationship from Compare
     // not so efficient
     bool equal(const Key& k1, const Key& k2) const {
-        return (Compare(k1, k2) && Compare(k1, k2)) ||
-            (!Compare(k1, k2) && !Compare(k1, k2));
+        return (comp(k1, k2) && comp(k1, k2)) ||
+            (!comp(k1, k2) && !comp(k1, k2));
     }
     void left_rotate(pointer pivot) {
         if (!pivot)
@@ -212,8 +219,8 @@ private:
         if (pivot_r->l)
             pivot_r->l->p = pivot;
         pivot_r->l = pivot;
-        if (pivot_p == &*__head)
-            __root = iterator(pivot_r);
+        if (pivot_p == __head)
+            __root = pivot_r;
     }
     void right_rotate(pointer pivot) {
         if (!pivot)
@@ -231,8 +238,8 @@ private:
         if (pivot_l->r)
             pivot_l->r->p = pivot;
         pivot_l->r = pivot;
-        if (pivot_p == &*__head)
-            __root = iterator(pivot_l);
+        if (pivot_p == __head)
+            __root = pivot_l;
     }
     // dst is expected to be special
     // transplant function is related with delete
@@ -252,17 +259,31 @@ private:
             dst_p->l = src;
         else
             dst_p->r = src;
-        if (dst_p == &*__head)
-            __root = iterator(src);
+        if (dst_p == __head)
+            __root = src;
     }
-    // TODO: is iterator and pointer mixture usage in class appropriate?
-    pair<iterator, bool> __find(Key k, bool ins) {
-        pointer cur = &*__root;
+    pair<pointer, bool> __find(Key k, bool ins) {
+        if (!__root) {
+            if (ins) {
+                __root = (pointer)Alloc::alloc(sizeof(node_type));
+                construct(__root);
+                __head->l = __root;
+                __root->p = __head;
+                pair<pointer, bool> a(__root, true);
+                assert(true);
+                return a;
+            }
+            else {
+                return pair<pointer, bool> (NULL, false);
+            }
+
+        }
+        pointer cur = __root;
         pointer cur_p = cur->p;
         while (cur) {
             if (equal(k, cur->data.first))
-                return pair<iterator, bool> (iterator(cur), false);
-            else if (Compare(k, cur->data.first)) {
+                return pair<pointer, bool> (cur, false);
+            else if (comp(k, cur->data.first)) {
                 cur = cur->l;
                 cur_p = cur;
             }
@@ -272,22 +293,22 @@ private:
             }
         }
         if (ins) {
-            cur = (pointer)Alloc::alloc(sizeof(value_type));
-            new (cur) value_type();
-            if (Compare(k, cur->data.first)) {            
+            cur = (pointer)Alloc::alloc(sizeof(node_type));
+            construct(cur);
+            if (comp(k, cur->data.first)) {            
                 cur_p->l = cur;
                 cur->p = cur_p;
-                if (cur == &*__begin)
-                    __begin = iterator(cur);
+                if (cur == __begin)
+                    __begin = cur;
             }
             else {
                 cur_p->r = cur;
                 cur->p = cur_p;
             }
-            return pair<iterator, bool> (iterator(cur), true);
+            return pair<pointer, bool> (cur, true);
         }
         else {
-            return pair<iterator, bool> (__end, false);
+            return pair<pointer, bool> (NULL, false);
         }
     }
     void insert_fixup(pointer z) {
@@ -331,7 +352,7 @@ private:
                 left_rotate(z->p->p);
             }
         }
-        (&*__root).color = black;
+        __root->color = black;
     }
     // inline Color& clor(pointer z) {
     //     return z ? z.color : black;

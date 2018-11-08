@@ -14,6 +14,11 @@ void construct(T1* pointer, const T2& value) {
     new (pointer) T2(value);
 }
 
+template<typename T1>
+void construct(T1* pointer) {
+    new (pointer) T1();
+}
+
 // 广义析构函数
 template<typename T>
 void destroy(T* pointer) {
