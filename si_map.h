@@ -280,7 +280,7 @@ private:
             __root = pivot_l;
     }
     void transplant(pointer src, pointer dst) {
-        // need do nothing case
+        // need do nothing
         if (!dst)
             return;
         // corner case

@@ -74,17 +74,17 @@ void test_map(int N) {
         cout << "error" << endl;
     cout << "input scale N = " << N << endl;
     cout << "my map:" << endl;
-    log("build tree: ", N, t1, t2);
+    log("build tree: ", 1, t1, t2);
     log("traverse per element: ", N, t2, t3);
     cout << "std map:" << endl;
-    log("build tree: ", N, t3, t4);
+    log("build tree: ", 1, t3, t4);
     log("traverse per element: ", N, t4, t5);
     // si::map<int, int>::iterator it;
     // for (; it != dict1.end(); ++it)
     //     cout << (*it).second << " ";
 }
 int main() {
-    int N = 1000000;
+    int N = 10000000;
     // test_vector(N);
     test_map(N);
 }
