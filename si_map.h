@@ -25,6 +25,12 @@ struct rbtree_node {
         p = l;
         color = red;
     }
+    rbtree_node(Key k) {
+        l = NULL;
+        r = l;
+        p = l;
+        data = pair<Key, Value> (k);
+    }
 };
 
 // 
@@ -169,6 +175,7 @@ public:
         if (tmp.second) {
             pointer p2fixup = tmp.first;
             if (!__length) {
+                __begin = p2fixup;
                 (__head)->l = p2fixup;
                 p2fixup->p = (__head);
                 p2fixup->color = black;
@@ -181,7 +188,38 @@ public:
         return iterator(tmp.first)->second;
     }
     void remove(const Key& k) {
-
+        pointer z = __find(k, false).first;
+        // k don't exist
+        if (!z)
+            return;
+        pointer y = z;
+        pointer x;
+        Color y_original_color = y.color;
+        if (!z->l) {
+            x = z->r;
+            transplant(x, z);
+        }
+        else if (!z->r) {
+            x = z->l;
+            transplant(x, z);
+        }
+        else {
+            y = tree_min(z->r);
+            x = y->r;
+            if (y->p == z)
+                x->p = y;
+            else {
+                transplant(y->r, y);
+                y->r = z->r;
+                y->r->p = y;
+            }
+            transplant(y, z);
+            y->l = z->l;
+            y->l->p = y;
+            y->color = z->color;
+        }
+        if (y_original_color == black)
+            remove_fixup(x);
     }  
 private:
     // TODO: how to destruct static pointer points to dynamic memory ?
@@ -200,8 +238,8 @@ private:
     // TODO: deduce equal relationship from Compare
     // not so efficient
     bool equal(const Key& k1, const Key& k2) const {
-        return (comp(k1, k2) && comp(k1, k2)) ||
-            (!comp(k1, k2) && !comp(k1, k2));
+        return (comp(k1, k2) && comp(k2, k1)) ||
+            (!comp(k1, k2) && !comp(k2, k1));
     }
     void left_rotate(pointer pivot) {
         if (!pivot)
@@ -241,20 +279,20 @@ private:
         if (pivot_p == __head)
             __root = pivot_l;
     }
-    // dst is expected to be special
-    // transplant function is related with delete
-    // we can only delete one node once a time
     void transplant(pointer src, pointer dst) {
-        if (!src || !dst)
+        // need do nothing case
+        if (!dst)
             return;
-        assert(!dst->l && !dst->r);
+        // corner case
         pointer dst_p = dst->p;
-        pointer src_p = src->p;
-        if (src == src_p->l)
-            src_p->l = NULL;
-        else
-            src_p->r = NULL;
-        src->p = dst_p;
+        if (src) {
+            pointer src_p = src->p;
+            if (src == src_p->l)
+                src_p->l = NULL;
+            else
+                src_p->r = NULL;
+            src->p = dst_p;
+        }
         if (dst == dst_p->l)
             dst_p->l = src;
         else
@@ -269,9 +307,8 @@ private:
                 construct(__root);
                 __head->l = __root;
                 __root->p = __head;
-                pair<pointer, bool> a(__root, true);
-                assert(true);
-                return a;
+                __root->data.first = k;
+                return pair<pointer, bool> (__root, true);
             }
             else {
                 return pair<pointer, bool> (NULL, false);
@@ -284,17 +321,18 @@ private:
             if (equal(k, cur->data.first))
                 return pair<pointer, bool> (cur, false);
             else if (comp(k, cur->data.first)) {
-                cur = cur->l;
                 cur_p = cur;
+                cur = cur->l;            
             }
             else {
-                cur = cur->r;
                 cur_p = cur;
+                cur = cur->r;
             }
         }
         if (ins) {
             cur = (pointer)Alloc::alloc(sizeof(node_type));
             construct(cur);
+            cur->data.first = k;
             if (comp(k, cur->data.first)) {            
                 cur_p->l = cur;
                 cur->p = cur_p;
@@ -321,16 +359,15 @@ private:
                      z->p->p->color = red;
                      z = z->p->p;
                 }
-                else if (z == z->p->r) { //case 2
-                    z = z->p;
-                    left_rotate(z);
-                }
                 else {
-
+                    if (z == z->p->r) { //case 2
+                        z = z->p;
+                        left_rotate(z);
+                    }
+                    z->p->color = black; // case 3
+                    z->p->p->color = red;
+                    right_rotate(z->p->p);
                 }
-                z->p->color = black; // case 3
-                z->p->p->color = red;
-                right_rotate(z->p->p);
             }
             else {
                 pointer y = z->p->p->l;
@@ -340,24 +377,87 @@ private:
                      z->p->p->color = red;
                      z = z->p->p;
                 }
-                else if (z == z->p->l) { //case 2
-                    z = z->p;
-                    right_rotate(z);
-                }
                 else {
-
-                }
-                z->p->color = black; // case 3
-                z->p->p->color = red;
-                left_rotate(z->p->p);
+                    if (z == z->p->l) { //case 2
+                        z = z->p;
+                        right_rotate(z);
+                    }
+                    z->p->color = black; // case 3
+                    z->p->p->color = red;
+                    left_rotate(z->p->p);
+                }              
             }
         }
         __root->color = black;
     }
-    // inline Color& clor(pointer z) {
-    //     return z ? z.color : black;
-    // }
-    // post order traverse for destructor
+    pointer remove_fixup(pointer x) {
+        while (x != __root && x->color == black) {
+            pointer w;
+            if (x == x->p->l) {
+                w = x->p->r;
+                if (w->color == red) {  // case1
+                    w->color = black;
+                    x->p->color = red;
+                    left_rotate(x->p);
+                    w = x->p->r;
+                }
+                if ((!w->l || w->l->color == black) && (!w->r || w->r->color == black)) { // case2
+                    w->color = red;
+                    x = x->p;
+                }
+                else { 
+                    if (w->r->color == black) { // case3
+                        w->l->color = black;
+                        w->color = red;
+                        right_rotate(w);
+                        w = x->p->r;
+                    }
+                    w->color = x->p->color;     // case4
+                    x->p->color = black;
+                    w->r->color = black;
+                    left_rotate(x->p);
+                    x = __root;
+                }
+            }
+            else {
+                w = x->p->l;
+                if (w->color == red) {  // case1
+                    w->color = black;
+                    x->p->color = red;
+                    right_rotate(x->p);
+                    w = x->p->l;
+                }
+                if ((!w->l || w->l->color == black) && (!w->r || w->r->color == black)) { // case2
+                    w->color = red;
+                    x = x->p;
+                }
+                else { 
+                    if (w->l->color == black) { // case3
+                        w->r->color = black;
+                        w->color = red;
+                        left_rotate(w);
+                        w = x->p->l;
+                    }
+                    w->color = x->p->color;     // case4
+                    x->p->color = black;
+                    w->l->color = black;
+                    right_rotate(x->p);
+                    x = __root;
+                }
+            }
+        }
+        x->color = black;
+    }
+    pointer tree_min(pointer r) {
+        while (r && r->l)
+            r = r->l;
+        return r;
+    }
+    pointer tree_max(pointer r) {
+        while (r && r->r)
+            r = r->r;
+        return r;
+    }
     void __destroy(pointer p) {
         if (!p)
             return;
