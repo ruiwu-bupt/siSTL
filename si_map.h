@@ -58,17 +58,22 @@ public:
                 p = p->l;
                 while (p->r)
                     p = p->r;
-                return (pointer)p;
+                return p;
             }
             else {
-                if (p == __root)
+                // p == root
+                if (!p->p->p)
                     return NULL;
                 else if (p == p->p->r)
-                    return (pointer)(p->p);
+                    return p->p;
                 else {
-                    while (p == p->p->l)
+                    while (p == p->p->l) {
+                        // back trace to root, no predecessor
+                        if (!p->p->p)
+                            return NULL;
                         p = p->p;
-                    return (pointer)(p->p);
+                    }
+                    return p->p;
                 }
             }
         }
@@ -78,17 +83,25 @@ public:
                 p = p->r;
                 while (p->l)
                     p = p->l;
-                return (pointer)p;
+                return p;
             }
             else {
-                if (p == __root)
+                if (!p->p->p)
                     return NULL;
                 else if (p == p->p->l)
-                    return (pointer)(p->p);
+                    return p->p;
                 else {
-                    while (p == p->p->r)
+                    while (p == p->p->r) {
+                        // back trace to root, no successor
+                        if (!p->p->p)
+                            return NULL;
                         p = p->p;
-                    return (pointer)(p->p);
+                    }
+                    // TODO: 这里逻辑有点混乱
+                    if (!p->p->p)
+                        return NULL;
+                    else
+                        return p->p;
                 }
             }
         }
@@ -149,7 +162,9 @@ public:
     typedef typename iterator::v_reference v_reference;
     typedef typename iterator::v_pointer v_pointer;
     map() {
+        // no construct on __head, __head->p != null, successor and predecessor fails
         __head = (pointer)Alloc::alloc(sizeof(node_type));
+        construct(__head);
         __begin = NULL;
         __root = NULL;
         __length = 0;
@@ -350,7 +365,7 @@ private:
         }
     }
     void insert_fixup(pointer z) {
-        while (z->p->color == red) {
+        while (z->p->p && z->p->color == red) {
             if (z->p == z->p->p->l) {
                 pointer y = z->p->p->r;
                 if (y && y->color == red) { // case 1

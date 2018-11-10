@@ -8,10 +8,19 @@
 using namespace std;
 
 float t(clock_t t1, clock_t t2) {
-    return (t2 - t1) * 1.0 / CLOCKS_PER_SEC * 1000;
+    return (t2 - t1) * 1.0 / CLOCKS_PER_SEC;
 }
 void log(string descrip, int N, clock_t t1, clock_t t2) {
-    cout << "\t" << descrip << t(t1, t2)/N*1000 << "us" << endl;
+    cout << "\t" << descrip;
+    float tm = t(t1, t2)/N;
+    if (tm <= 1e-6)
+        cout << tm*1e9 << "ns" << endl;
+    else if (tm <= 1e-3)
+        cout << tm*1e6 << "us" << endl;
+    else if (tm <= 1)
+        cout << tm*1e3 << "ms" << endl;
+    else
+        cout << tm << "s" << endl;
 }
 // TODO: valgrind checks memory usage
 void test_vector(int N) {
@@ -60,18 +69,23 @@ void test_map(int N) {
         dict1[i] = i;
     }
     clock_t t2 = clock();
-    for (int i = 0; i < N; i++) {
-        sum1 += dict1[i];
+    si::map<int, int>::iterator it = dict1.begin();
+    for (; it != dict1.end(); ++it) {
+        // cout << (*it).second << " ";
+        sum1 += (*it).second;
     }
     clock_t t3 = clock();
     for (int i = 0; i < N; i++)
         dict2[i] = i;
     clock_t t4 = clock();
-    for (int i = 0; i < N; i++)
-        sum2 += dict2[i];
+    std::map<int, int>::iterator it2 = dict2.begin();
+    for (; it2 != dict2.end(); ++it2) {
+        // cout << (*it).second << " ";
+        sum2 += (*it2).second;
+    }
     clock_t t5 = clock();
     if (sum1 != sum2)
-        cout << "error" << endl;
+        cout << "traverse error" << endl;
     cout << "input scale N = " << N << endl;
     cout << "my map:" << endl;
     log("build tree: ", 1, t1, t2);

@@ -1,6 +1,6 @@
 [TOC]
 # siSTL
-`siSTL` is a toy STL based on sgiSTL
+`siSTL` is a toy STL inspired by sgiSTL
 
 ## development plan
 ### allocator
