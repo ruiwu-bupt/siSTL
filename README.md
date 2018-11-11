@@ -14,7 +14,7 @@
 - string
 - list
 - stack
-- dqueue
+- queue
 - priority_queue
 - map
 - set
@@ -32,3 +32,4 @@
 - all source code mix in `*.h`, cosider seperate implementation in `*.impl.h`
 - not much class inherit as sgiSTL, good or bad?
 - use valgrind for memory use analysis
+- consider reverse iterator

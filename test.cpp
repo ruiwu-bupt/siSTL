@@ -1,8 +1,10 @@
 #include <iostream>
 #include "si_vector.h"
 #include "si_map.h"
+#include "si_list.h"
 #include <vector>
 #include <map>
+#include <list>
 #include <time.h>
 
 using namespace std;
@@ -11,7 +13,7 @@ float t(clock_t t1, clock_t t2) {
     return (t2 - t1) * 1.0 / CLOCKS_PER_SEC;
 }
 void log(string descrip, int N, clock_t t1, clock_t t2) {
-    cout << "\t" << descrip;
+    cout << "\t" << descrip << " ";
     float tm = t(t1, t2)/N;
     if (tm <= 1e-6)
         cout << tm*1e9 << "ns" << endl;
@@ -22,7 +24,6 @@ void log(string descrip, int N, clock_t t1, clock_t t2) {
     else
         cout << tm << "s" << endl;
 }
-// TODO: valgrind checks memory usage
 void test_vector(int N) {
     si::vector<int> nums1(10, 0);
     std::vector<int> nums2(10, 0);
@@ -37,28 +38,33 @@ void test_vector(int N) {
         nums4.push_back(nums2);
     }
     clock_t t3 = clock();
-    cout << "my vector: " << (t2 - t1) * 1.0 / CLOCKS_PER_SEC * 1000 << "ms" << endl;
-    cout << "std vector: " << (t3 - t2) * 1.0 / CLOCKS_PER_SEC * 1000 << "ms" << endl;
+    cout << "my vector:" << endl;
+    log("push_back N size 10 vector", 1, t1, t2);
+    cout << "std vector:" << endl;
+    log("push_back N size 10 vector", 1, t2, t3);
 }
 
-// void test_list() {
-//     int N = 1000;
-//     si::vector<int> nums1(10, 0);
-//     std::vector<int> nums2(10, 0);
-//     si::vector<si::vector<int> > nums3;
-//     vector<vector<int> > nums4;
-//     clock_t t1 = clock();
-//     for (int i = 0; i < N; i++) {
-//         nums3.push_back(nums1);
-//     }
-//     clock_t t2 = clock();
-//     for (int i = 0; i < N; i++) {
-//         nums4.push_back(nums2);
-//     }
-//     clock_t t3 = clock();
-//     cout << "my vector: " << (t2 - t1) * 1.0 / CLOCKS_PER_SEC * 1000 << "ms" << endl;
-//     cout << "std vector: " << (t3 - t2) * 1.0 / CLOCKS_PER_SEC * 1000 << "ms" << endl;
-// }
+void test_list(int N) {
+    // si::vector<int> nums1(10, 0);
+    // std::vector<int> nums2(10, 0);
+    // si::list<si::vector<int> > nums3;
+    // list<vector<int> > nums4;
+    si::list<int> nums3;
+    list<int> nums4;
+    clock_t t1 = clock();
+    for (int i = 0; i < N; i++) {
+        nums3.push_back(i);
+    }
+    clock_t t2 = clock();
+    for (int i = 0; i < N; i++) {
+        nums4.push_back(i);
+    }
+    clock_t t3 = clock();
+    cout << "my list:" << endl;
+    log("push_back", 1, t1, t2);
+    cout << "std list:" << endl;
+    log("push_back", 1, t2, t3);
+}
 
 void test_map(int N) {
     si::map<int, int> dict1;
@@ -86,7 +92,6 @@ void test_map(int N) {
     clock_t t5 = clock();
     if (sum1 != sum2)
         cout << "traverse error" << endl;
-    cout << "input scale N = " << N << endl;
     cout << "my map:" << endl;
     log("build tree: ", 1, t1, t2);
     log("traverse per element: ", N, t2, t3);
@@ -98,7 +103,9 @@ void test_map(int N) {
     //     cout << (*it).second << " ";
 }
 int main() {
-    int N = 10000000;
+    int N = 1000000;
+    cout << "input scale N = " << N << endl;
     // test_vector(N);
-    test_map(N);
+    // test_map(N);
+    test_list(N);
 }

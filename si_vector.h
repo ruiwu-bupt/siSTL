@@ -86,9 +86,11 @@ public:
 		__length = that.size();
 		return *this;
 	}
+	// support python-like v[-1] refer to last element in v
 	T& operator[](int pos) {
 		int n = __length;
 		assert(pos >= -n && pos < n);
+		if (pos < 0) pos += n;
 		return *(__begin+pos);
 	}
 	void push_back(const T& val) {
