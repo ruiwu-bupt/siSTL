@@ -1,6 +1,7 @@
 #ifndef __SI_FUNCTOR_H
 #define __SI_FUNCTOR_H
 
+namespace si{
 template<typename T>
 struct less{
     bool operator()(const T& lval, const T& rval) const {
@@ -21,5 +22,6 @@ struct equal{
         return lval == rval;
     }
 };
+}
 
 #endif

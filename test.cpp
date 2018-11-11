@@ -5,7 +5,9 @@
 #include <vector>
 #include <map>
 #include <list>
+#include <deque>
 #include <time.h>
+#include <cstdlib>
 
 using namespace std;
 
@@ -102,10 +104,30 @@ void test_map(int N) {
     // for (; it != dict1.end(); ++it)
     //     cout << (*it).second << " ";
 }
+
 int main() {
-    int N = 1000000;
+    int N = 1000;
+    cin >> N;
     cout << "input scale N = " << N << endl;
     // test_vector(N);
     // test_map(N);
-    test_list(N);
+    // test_list(N);
 }
+
+// TODO: std::vector traverse time don't vary as N change, why?
+// std::vector<int> q;
+// si::vector<int> v;
+// int sum = 0, sum2 = 0;
+// for (int i = 0; i < N; i++) {
+//     q.push_back(rand());
+//     v.push_back(rand());
+// }
+// clock_t t1 = clock();
+// for (int i = 0; i < N; i++)
+//     sum += v[i];
+// clock_t t2 = clock();
+// for (int i = 0; i < N; i++)
+//     sum2 += q[i];
+// clock_t t3 = clock();
+// log("", 1, t1, t2);
+// log("", 1, t2, t3);

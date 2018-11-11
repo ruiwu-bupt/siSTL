@@ -59,7 +59,7 @@ void destroy_aux(ForwardIterator begin, ForwardIterator end, __POD_False) {
         destroy(&*begin);
 }
 
-template<typename ForwardIterator, typename Alloc = simple_alloc>
+template<typename ForwardIterator, typename Alloc = si::simple_alloc>
 void destroy_dealloc(ForwardIterator begin, ForwardIterator end) {
     ForwardIterator it = begin;
     while (it != end) {
@@ -71,7 +71,7 @@ void destroy_dealloc(ForwardIterator begin, ForwardIterator end) {
     }
 }
 
-template<typename ForwardIterator, typename Alloc = simple_alloc>
+template<typename ForwardIterator, typename Alloc = si::simple_alloc>
 void destroy_dealloc(ForwardIterator begin) {
     destroy(&*begin);
     Alloc::dealloc(&*begin);

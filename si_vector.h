@@ -145,6 +145,7 @@ private:
 	// but standard dont't allow no-integral static const member in class
 	static const int growth_factor = 2;
 	static const size_t reserve_slot = 4;
+	// TODO: change to pointer
 	iterator __begin;
 	iterator __end;
 	size_t __length;

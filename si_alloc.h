@@ -7,6 +7,7 @@
 #include <cstdlib>
 #include <cstddef>
 
+namespace si{
 class simple_alloc
 {
 public:
@@ -20,6 +21,7 @@ void* simple_alloc::alloc(size_t num) {
 
 void simple_alloc::dealloc(void* Tp) {
     free(Tp);
+}
 }
 
 #endif
