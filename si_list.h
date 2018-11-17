@@ -111,7 +111,7 @@ public:
             push_back(initial_list[i]);
     }
     ~list() {
-        destroy_dealloc(begin(), iterator());
+        destroy_dealloc(iterator(__head), iterator());
     }
     iterator begin() const {
         return iterator(__head->next);

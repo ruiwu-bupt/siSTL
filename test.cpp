@@ -2,10 +2,13 @@
 #include "si_vector.h"
 #include "si_map.h"
 #include "si_list.h"
+#include "si_stack.h"
+#include "si_priority_queue.h"
 #include <vector>
 #include <map>
 #include <list>
-#include <deque>
+#include <stack>
+#include <queue>
 #include <time.h>
 #include <cstdlib>
 
@@ -27,23 +30,25 @@ void log(string descrip, int N, clock_t t1, clock_t t2) {
         cout << tm << "s" << endl;
 }
 void test_vector(int N) {
-    si::vector<int> nums1(10, 0);
-    std::vector<int> nums2(10, 0);
-    si::vector<si::vector<int> > nums3;
-    vector<vector<int> > nums4;
+    // si::vector<int> nums1(10, 0);
+    // std::vector<int> nums2(10, 0);
+    // si::vector<si::vector<int> > nums3;
+    // vector<vector<int> > nums4;
+    si::vector<int> nums3;
+    vector<int> nums4;
     clock_t t1 = clock();
     for (int i = 0; i < N; i++) {
-        nums3.push_back(nums1);
+        nums3.push_back(i);
     }
     clock_t t2 = clock();
     for (int i = 0; i < N; i++) {
-        nums4.push_back(nums2);
+        nums4.push_back(i);
     }
     clock_t t3 = clock();
     cout << "my vector:" << endl;
-    log("push_back N size 10 vector", 1, t1, t2);
+    log("push_back", 1, t1, t2);
     cout << "std vector:" << endl;
-    log("push_back N size 10 vector", 1, t2, t3);
+    log("push_back", 1, t2, t3);
 }
 
 void test_list(int N) {
@@ -105,13 +110,56 @@ void test_map(int N) {
     //     cout << (*it).second << " ";
 }
 
+void test_stack(int N) {
+    si::stack<int> nums3;
+    stack<int> nums4;
+    clock_t t1 = clock();
+    for (int i = 0; i < N; i++) {
+        nums3.push(i);
+    }
+    clock_t t2 = clock();
+    for (int i = 0; i < N; i++) {
+        nums4.push(i);
+    }
+    clock_t t3 = clock();
+    cout << "my stack:" << endl;
+    log("push_back", 1, t1, t2);
+    cout << "std stack:" << endl;
+    log("push_back", 1, t2, t3);
+}
+
+void test_priority_queue(int N) {
+    si::priority_queue<int> nums3;
+    priority_queue<int> nums4;
+    clock_t t1 = clock();
+    for (int i = 0; i < N; i++) {
+        nums3.push(i);
+    }
+    clock_t t2 = clock();
+    for (int i = 0; i < N; i++) {
+        nums4.push(i);
+    }
+    clock_t t3 = clock();
+    cout << "my priority_queue:" << endl;
+    log("push_back", 1, t1, t2);
+    cout << "std priority_queue:" << endl;
+    log("push_back", 1, t2, t3);
+    // while(!nums3.empty()) {
+    //     cout << nums3.top() << " ";
+    //     nums3.pop();
+    // }
+}
+
+
 int main() {
     int N = 1000;
     cin >> N;
     cout << "input scale N = " << N << endl;
-    // test_vector(N);
-    // test_map(N);
-    // test_list(N);
+    test_vector(N);
+    test_map(N);
+    test_list(N);
+    test_stack(N);
+    test_priority_queue(N);
 }
 
 // TODO: std::vector traverse time don't vary as N change, why?

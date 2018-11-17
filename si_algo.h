@@ -77,4 +77,11 @@ void destroy_dealloc(ForwardIterator begin) {
     Alloc::dealloc(&*begin);
 }
 
+template<typename T>
+void swap(T& a, T& b) {
+    T tmp = a;
+    a = b;
+    b = tmp;
+}
+
 #endif

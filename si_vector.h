@@ -47,6 +47,9 @@ public:
 			tmp.it -= step;
 			return tmp;
 		}
+		int operator-(self that) {
+			return it - that.it;
+		}
 		reference operator*() {
 			return *it;
 		}

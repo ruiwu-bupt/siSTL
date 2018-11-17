@@ -15,6 +15,7 @@ namespace si{
 template<typename T, typename Alloc = si::simple_alloc>
 class stack{
 public:
+    stack() {}
     stack(const si::vector<T>& initial_vector) {
         for (int i = 0; i < initial_vector.size(); i++)
             push(initial_vector[i]);
@@ -37,17 +38,12 @@ public:
     // TODO: does this method access queue top as rvalue in the right way ?
     T& top() const {
         assert(!empty());
-        return *(l.end()-1);
+        return l[-1];
     }
     inline size_t size() const { return l.size();}
     inline bool empty() const { return l.size() == 0;}
 private:
-    si::list<T> l;
-    swap(T* a, T* b) {
-        T tmp = *b;
-        b = *a;
-        *a = tmp;
-    }
+    si::vector<T> l;
 };
 }
 

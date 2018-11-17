@@ -15,6 +15,7 @@ namespace si{
 template<typename T, typename Compare = si::greater<T>, typename Alloc = si::simple_alloc>
 class priority_queue{
 public:
+    priority_queue(){}
     priority_queue(const si::vector<T>& initial_vector) {
         for (int i = 0; i < initial_vector.size(); i++)
             push(initial_vector[i]);
@@ -33,9 +34,8 @@ public:
         while (pos) {
             size_t p_pos = (pos-1)/2;
             // TODO: implement swap function in si_algo
-            // how to dealwith node<T> iterator?
             if (comp(v[pos], v[p_pos])) {
-                swap(&v[pos], &v[p_pos]);
+                swap(v[pos], v[p_pos]);
             }
             pos = p_pos;
         }
@@ -56,7 +56,7 @@ public:
                 g = comp(v[l], v[r]) ? l : r;
             }
             if (comp(v[g], v[p])) {
-                swap(&v[g], v[p]);
+                swap(v[g], v[p]);
                 p = g;
             }
             else
@@ -64,7 +64,7 @@ public:
         }
     }
     // TODO: does this method access queue top as rvalue in the right way ?
-    T& top() const {
+    T& top() {
         assert(!empty());
         return v[0];
     }
@@ -73,10 +73,10 @@ public:
 private:
     si::vector<T> v;
     Compare comp;
-    swap(T* a, T* b) {
-        T tmp = *b;
-        b = *a;
-        *a = tmp;
+    void swap(T& a, T& b) {
+        T tmp = b;
+        b = a;
+        a = tmp;
     }
 };
 }

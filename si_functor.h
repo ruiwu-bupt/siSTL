@@ -22,6 +22,20 @@ struct equal{
         return lval == rval;
     }
 };
+
+template<typename T>
+struct increace{
+    bool operator()(const T& val) {
+        ++val;
+    }
+};
+
+template<typename T>
+struct decrease{
+    bool operator()(const T& val) {
+        --val;
+    }
+};
 }
 
 #endif

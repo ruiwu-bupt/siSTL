@@ -34,7 +34,7 @@ struct rbtree_node {
 };
 
 // 
-template<typename Key, typename Value, typename Compare = less<Key>, typename Alloc = simple_alloc>
+template<typename Key, typename Value, typename Compare = si::less<Key>, typename Alloc = si::simple_alloc>
 class map{
 public:
     // definition for map iterator
