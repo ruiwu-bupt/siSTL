@@ -4,7 +4,7 @@
 #include "si_traits.h"
 #include "si_algo.h"
 
-// sort for_each lower_bound upper_bound find next_permutation
+// sort for_each lower_bound find next_permutation
 
 namespace si{
 template<typename ForwardIterator, typename functor>
@@ -82,13 +82,38 @@ template<typename BidirectionalIterator>
 bool next_permutation(BidirectionalIterator begin, BidirectionalIterator end) {
     typedef typename traits_iterator<RandomAccessIterator>::value_type T;
     si::less<T> comp;
-    next_permutation(begin, end, comp);
+    return next_permutation(begin, end, comp);
 }
 
 template<typename BidirectionalIterator, typename Compare>
 bool next_permutation(BidirectionalIterator begin, BidirectionalIterator end, Compare comp) {
-    for (int )
+    return false;
 }
 
+template<typename RandomAccessIterator, typename T>
+RandomAccessIterator lower_bound(RandomAccessIterator begin, RandomAccessIterator end, const T& val) {
+    si::less<T> comp;
+    return lower_bound(begin, end, comp, val);
+}
+
+template<typename RandomAccessIterator, typename T, typename Compare>
+RandomAccessIterator lower_bound(RandomAccessIterator begin, RandomAccessIterator end, Compare comp, const T& val) {
+    int len = end - begin;
+    int left = 0, right = len;
+    while (left < right) {
+        mid = left + len/2;
+        if (comp(*(begin+mid), val) && !__equal(comp, *(begin+mid), val))
+            left = mid + 1;
+        else
+            right = mid;
+    }
+    return *(begin+left);
+}
+
+template<typename Compare, typename T>
+inline static bool __equal(Compare comp, const T& k1, const T& k2) {
+    return (comp(k1, k2) && comp(k2, k1)) ||
+            (!comp(k1, k2) && !comp(k2, k1));
+}
 
 }

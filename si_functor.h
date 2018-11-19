@@ -9,10 +9,29 @@ struct less{
     }
 };
 
+struct less_equal{
+    bool operator()(const T& lval, const T& rval) const {
+        return lval <= rval;
+    }
+};
+
 template<typename T>
 struct greater{
     bool operator()(const T& lval, const T& rval) const {
         return lval > rval;
+    }
+};
+
+struct greater_equal{
+    bool operator()(const T& lval, const T& rval) const {
+        return lval >= rval;
+    }
+};
+
+template<typename T>
+struct unequal{
+    bool operator()(const T& lval, const T& rval) const {
+        return lval != rval;
     }
 };
 
