@@ -15,16 +15,16 @@ struct pair{
 		construct(p2);
 	}
 	pair(const T1& a, const T2& b) {
-		// 这里无脑新申请空间，用operator new，debug了好久，真的蠢。。
+		// 这里无脑新申请空间，用placement new，debug了好久，真的蠢。。
 		T1* p1 = &first;
 		T2* p2 = &second;
-		construct(p1, a); 
+		construct(p1, a);
 		construct(p2, b);
 	}
 	pair(const T1& a) {
-		// 这里无脑新申请空间，用operator new，debug了好久，真的蠢。。
+		// 这里无脑新申请空间，用placement new，debug了好久，真的蠢。。
 		T1* p1 = &first;
-		construct(p1, a); 
+		construct(p1, a);
 	}
 };
 }

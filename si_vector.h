@@ -77,13 +77,13 @@ public:
 		fill_n(__begin, __end, val);
 	}
 	// copy constructor
-	vector(const vector& that) {
+	vector(const vector<T>& that) {
 		__length = that.size();
 		resize(that.size());
 		__length = that.size();
 		fill(that.begin(), that.end(), __begin);
 	}
-	vector<T> operator=(const vector& that) {
+	vector<T>& operator=(const vector<T>& that) {
 		__length = that.size();
 		resize(that.size());
 		__length = that.size();
@@ -124,6 +124,7 @@ public:
 		__length--;
 		--__end;
 	}
+    // TODO: function behaves much diferrent from stl standard
 	void resize(size_t capacity) {
 		size_t new_capacity = cal_capacity(capacity);
 		iterator new_begin((T*)Alloc::alloc(new_capacity * sizeof(T)));
@@ -144,9 +145,10 @@ public:
 		Alloc::dealloc(&*__begin);
 	}
 private:
-	// TODO: is 1.5 better than 2 ?
+	// is 1.5 better than 2 ?
 	// but standard dont't allow no-integral static const member in class
-	static const int growth_factor = 2;
+    // constexpr static const declaration fix this
+	static const float growth_factor = 1.5;
 	static const size_t reserve_slot = 4;
 	// TODO: change to pointer
 	iterator __begin;

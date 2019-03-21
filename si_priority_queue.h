@@ -63,8 +63,9 @@ public:
                 break;
         }
     }
-    // TODO: does this method access queue top as rvalue in the right way ?
-    T& top() {
+    // does this method access queue top as rvalue in the right way
+    // const function with non-reference return value fix this
+    T top() const{
         assert(!empty());
         return v[0];
     }

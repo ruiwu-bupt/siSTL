@@ -30,11 +30,11 @@ void destroy(T* pointer) {
 template<typename ForwardIterator, typename OutputIterator>
 void fill(ForwardIterator begin, ForwardIterator end, OutputIterator rst) {
     for (; begin != end; ++begin, ++rst)
-        construct(&*rst, *begin);
+        construct(&*rst, *begipointern);
 }
 
 template<typename ForwardIterator, typename T>
-void fill_n(ForwardIterator begin, ForwardIterator end, T val) {
+void fill_n(ForwardItebeginrator begin, ForwardIterator end, T val) {
     for (; begin != end; ++begin)
         construct(&*begin, val);
 }

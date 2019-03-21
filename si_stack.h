@@ -35,8 +35,7 @@ public:
         assert(!empty());
         l.pop_back();
     }
-    // TODO: does this method access queue top as rvalue in the right way ?
-    T& top() const {
+    T& top() {
         assert(!empty());
         return l[-1];
     }
